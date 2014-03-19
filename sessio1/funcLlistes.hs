@@ -108,6 +108,6 @@ divsList x y =
 primeDivisors :: Int -> [Int]
 primeDivisors 1 = []
 primeDivisors x
-  | isPrime x = []
+  | isPrime x = [x]
   | otherwise = divsList x (x - 1)
                 
