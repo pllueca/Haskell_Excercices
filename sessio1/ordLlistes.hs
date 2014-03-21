@@ -18,7 +18,7 @@ insert (x:(n:xs)) y
                 
 -- elimina la primera ocurrencia de un element a una llista
 remove :: [Int] -> Int -> [Int]
-remove [] y = []
+remove [] _ = []
 remove (x:xs) y 
   | x == y    = xs
   | otherwise = [x] ++ (remove xs y)
@@ -53,6 +53,7 @@ isort l = insertAll l []
 
 --ordenacio x seleccio
 ssort :: [Int] -> [Int]
+ssort [] = []
 ssort [x] = [x]
 ssort l = [x] ++ ssort l2
   where x = minList l
@@ -71,9 +72,41 @@ lastH l n = drop a l
 
 -- merge sort 
 msort :: [Int] -> [Int]
+msort [] = []
 msort [x] = [x]
 msort [x,y] = merge [x] [y]
 msort l = merge (msort l1) (msort l2)
   where l1 = firstH l n
         l2 = lastH l n
         n = myLength l
+        
+
+majorsList :: Ord a => [a] -> a -> [a]
+majorsList [] _ = []
+majorsList (x:xs) n 
+  | x > n = (x:majorsList xs n)
+  | otherwise = majorsList xs n
+                
+menorsList :: Ord a => [a] -> a -> [a]
+menorsList [] _ = []
+menorsList (x:xs) n
+  | x <= n = (x: menorsList xs n)
+  | otherwise = menorsList xs n 
+
+qsort :: [Int] -> [Int]       
+qsort [] = []
+qsort [x] = [x]
+qsort (x:xs) =
+  qsort l1 ++ [x] ++  qsort l2
+  where l1 = menorsList xs x
+        l2 = majorsList xs x
+
+-- ordena llistes
+genQsort :: Ord a => [a] -> [a]
+genQsort [] = []
+genQsort [x] = [x]
+genQsort (x:xs) = 
+  genQsort l1 ++ [x] ++ genQsort l2
+  where l1 = menorsList xs x
+        l2 = majorsList xs x
+
