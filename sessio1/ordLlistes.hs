@@ -1,4 +1,10 @@
 --   FUNCIONS AUXILIARS
+
+-- retorna la longitud d'una llista
+myLength :: [Int] -> Int
+myLength [] = 0
+myLength (x:xs) = 1 + myLength xs
+
 -- inserta un element a una llista ordenada
 insert :: [Int] -> Int -> [Int]
 insert [] x = [x]
@@ -30,14 +36,7 @@ insertAll :: [Int] -> [Int] -> [Int]
 insertAll [] l = l
 insertAll (x:xs) l = insertAll xs (insert l x)
 
--- aplana una llista de llistes, transformantla en una llista
--- d'elements
-flatten :: [[Int]] -> [Int]
-flatten [] = []
-flatten (x:xs) = 
-  x ++ x2
-  where x2 = flatten xs
-        
+
 -- donades dos llistes ordenades, la fusio de les dues
 merge :: [Int] -> [Int] -> [Int]
 merge [] [] = []
@@ -46,13 +45,6 @@ merge [] l = l
 merge (x:xs) (y:ys)
   | x < y = [x] ++ merge xs (y:ys)
   | otherwise = [y] ++ merge (x:xs) ys
-
--- donada una llista retorna una llista q conte les llistes dun element
--- [1,2,3,4] -> [[1],[2],[3],[4]]
-separa :: [Int] -> [[Int]]
-separa [x] = [[x][]]
-separa [x,y] = [[x][y]]
-separa l = ((separa l1):separa l2)
 
 
 -- ordenacio x insercio
@@ -67,8 +59,21 @@ ssort l = [x] ++ ssort l2
         l2 = remove l x
 
 
+--retorna la primera meitat de la llista
+firstH :: [Int] -> Int -> [Int]
+firstH l n = take a l
+  where a = quot n 2
 
+lastH :: [Int] -> Int -> [Int]
+lastH l n = drop a l
+  where a = quot n 2
+
+
+-- merge sort 
 msort :: [Int] -> [Int]
-
-
-        
+msort [x] = [x]
+msort [x,y] = merge [x] [y]
+msort l = merge (msort l1) (msort l2)
+  where l1 = firstH l n
+        l2 = lastH l n
+        n = myLength l
