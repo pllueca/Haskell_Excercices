@@ -10,9 +10,9 @@ myMap f (x:xs) = [f x] ++ myMap f xs
 
 -- retorna la llista de llistes resultant daplicar cada una de les funcions del segon parametre a tots els elements de el primer parametre
 pam :: [Int] -> [Int -> Int] -> [[Int]]
-pam [] l = []
+--pam [] l = []
 pam l [] = []
-pam l (f1:lf) = [myMap f1 l] ++ pam l lf
+pam l (f1:lf) = [myMap f1 l] ++ (pam l lf)
 
 
 flatten :: [[Int]] -> [Int]
@@ -23,7 +23,7 @@ flatten l = foldl (++) [] l
 pam2 :: [Int] -> [Int -> Int] -> [[Int]]
 pam2 [] l = []
 pam2 l [] = []
-pam2 (x:xs) lf = [flatten (pam [x] lf)] ++ pam2 xs lf
+pam2 (x:xs) lf = [flatten (pam [x] lf)] ++ (pam2 xs lf)
   
 filterFoldl :: (Int -> Bool) -> (Int -> Int -> Int) -> Int -> [Int] -> Int
 filterFoldl fb fa x [] = x 
