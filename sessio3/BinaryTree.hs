@@ -41,3 +41,5 @@ inOrder t
                 
 breadthFirst :: Tree a -> [a]
 breadthFirst Empty = []
+breadthFirst t 
+  | 
