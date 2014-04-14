@@ -39,7 +39,12 @@ inOrder t
   | (isEmpty (fe t)) && (isEmpty (fd t)) = [arrel t]
   | otherwise = (inOrder (fe t)) ++ [arrel t] ++ (inOrder (fd t))
                 
-breadthFirst :: Tree a -> [a]
-breadthFirst Empty = []
-breadthFirst t 
-  | 
+-- breadthFirst :: Tree a -> [a]
+-- breadthFirst Empty = []
+-- breadthFirst t = 
+
+
+build :: Eq a => [a] -> [a] -> Tree a
+
+
+overlap :: (a -> a -> a) -> Tree a -> Tree a -> Tree 
