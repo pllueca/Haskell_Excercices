@@ -11,7 +11,7 @@ push x (Queue l1 l2) = (Queue l1 (x:l2))
         
 pop :: Queue a -> Queue a
 pop (Queue [] l2) = (Queue (drop 1 l1) [])
-  where l1 = reverseList l2
+  where l1 = myReverse l2
 pop (Queue l1 l2) = (Queue (drop 1 l1) l2)
 
 empty :: Queue a -> Bool
@@ -23,13 +23,18 @@ top (Queue [] l2) = last l2
 top (Queue (x:l1) l2) = x
            
 
-reverseList :: [a] -> [a]
-reverseList [] = []
-reverseList [x] = [x]
-reverseList (x:xs) = l ++ [x]
-  where l = reverseList xs
-        
 instance (Eq a) => Eq (Queue a) where
-  (Queue [][]) == (Queue [][]) = True
-  q1 == q2 = ((top q1) == (top q1)) && (pop q1 == pop q2)
-  
+  Queue [][] == Queue [][] = True
+  q1 == q2  
+    | (empty q1 || empty q2) = False
+    | otherwise = if (top q1) == (top q2) 
+             then ((pop q1) == (pop q2)) 
+             else False
+
+    
+-- aux function        
+myReverse :: [a] -> [a]
+myReverse = foldl (\l x -> ([x] ++ l)) []
+        
+sizeQ :: Queue a -> Int
+sizeQ (Queue l1 l2) = (length l1) +  (length l2)
