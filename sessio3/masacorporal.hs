@@ -20,6 +20,19 @@ getWord = do c <- getChar
                else do w <- getWord
                        return (c:w)
                 
---main = do l <- getLine          
+                    
+calcIMC = do nom <- getWord
+             if nom == "*" then return()
+               else do
+               m <- getWord
+               h <- getWord
+               putStr nom
+               putStr ": "
+               putStrLn $ indexMassa $ imc (read m :: Float) (read h :: Float)
+               calcIMC
+
+main = calcIMC  
+  
+          
           
           
