@@ -28,6 +28,9 @@ factorials :: [Int]
 factorials = map factorial nats
 
 
+factorials2 = scanl (*) 1  (drop 1 nats)
+
+
 quickFib :: Int -> Int
 quickFib n = round  (phi ** fromIntegral n / sq5)
   where
@@ -36,6 +39,8 @@ quickFib n = round  (phi ** fromIntegral n / sq5)
   
 fibs :: [Int]
 fibs = map quickFib nats
+
+fibs2 = 0 :  scanl (+) 1 fibs2
 
 isPrime :: Int -> Bool
 isPrime 0 = False
@@ -53,14 +58,30 @@ primes :: [Int]
 primes = filter isPrime nats
 
 
-hamming :: Int -> Bool
-hamming x = 
+--hamming :: Int -> Bool
+--hamming x = 
 
 -- nomes tenen 2, 3 i 5 com a divisors primers
-hammings :: [Int]
-hammings = filter hamming nats
+--hammings :: [Int]
+--hammings = filter hamming nats
 
-lns x = 
 
-lookNsay :: [Int]
-lookNsay = iterate lns [1]
+--numIguals [Int] -> Int
+--numIguals [x] = 1
+--numIguals (x:xs) = 
+
+--lookNsay :: [Int]
+--lookNsay = iterate lns [1]
+
+
+ntart :: [Int] -> [Int]
+ntart [] = []
+ntart [x] = []
+ntart l =  [x] ++ l2
+          where x = head l + (head $ drop 1 l)
+                l2 = ntart $ drop 1 l
+
+ntart1 l = [1] ++ (ntart l) ++ [1]
+  
+tartaglia :: [[Int]]
+tartaglia = iterate ntart1 [1]
