@@ -44,7 +44,12 @@ inOrder t
 -- breadthFirst t = 
 
 
+-- construeix larbre a partir del recorregut en 
 build :: Eq a => [a] -> [a] -> Tree a
+build [] [] = Empty
+build (x:xs) (y:ys) = planta x arb1 arb2 
+                      where arb1 = build
+                            arb2 = build 
 
 
-overlap :: (a -> a -> a) -> Tree a -> Tree a -> Tree 
+--overlap :: (a -> a -> a) -> Tree a -> Tree a -> Tree 

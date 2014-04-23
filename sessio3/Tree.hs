@@ -2,6 +2,8 @@ module Tree where
 
 data Tree a = Node a (Tree a) (Tree a) | Empty deriving (Show)
 
+fulla x = Node x Empty Empty
+
 abuit = Empty
 
 plantar x a1 a2 = Node x a1 a2
