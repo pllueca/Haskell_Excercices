@@ -66,7 +66,7 @@ insert (Node p1 lcoords lfills) p2 lcoord2 = Node p1 lcoords (fillsAnt ++ [fill]
         n = child p1 p2 lcoords
 
 -- construeix un kd2ntree a partir duna llista de parells (punt, llista de coordenades)
-build :: Point p => [(p, [Int])] -> Kd2nTree p
+build :: (Eq p, Point p) => [(p, [Int])] -> Kd2nTree p
 build [] = Empty
 build [(p1, l1)] = Node p1 l1 (replicate x Empty)
   where x =  2 ^ length l1
@@ -89,12 +89,44 @@ get_all Empty = []
 get_all (Node p ll []) = [(p, ll)]
 get_all (Node p ll (x:xs)) = (get_all x) ++ (get_all (Node p ll xs))
 
-contains :: Point p => Kd2nTree p -> p -> Bool
+get_childs :: Point p => Kd2nTree p -> [(p, [Int])]
+get_childs Empty = []
+get_childs (Node p ll []) = []
+get_childs (Node p ll (x:xs)) = (get_all x) ++ (get_all (Node p ll xs))
+
+contains :: (Point p, Eq p) => Kd2nTree p -> p -> Bool
 contains Empty p = False
 contains (Node p ll lfills) p1
-  | p == p1 = True
-  | otherwise = contains af p
-  where
+  | (p == p1) = True
+  | otherwise = contains af p1
+  where        
+    af = lfills !! x
+    x = child p p1 ll
+    
+remove :: (Point p, Eq p) => Kd2nTree p -> p -> Kd2nTree p
+remove (Node p lc lf) pr 
+  | p == pr = if esfulla ((Node p lc lf)) then
+                Empty
+                else build (get_childs (Node p lc lf))
+  | otherwise = (Node p lc (linis ++ [remove f1 pr] ++ llasts))
+  where 
+    linis = take x lf
+    llasts = drop (x+1) lf
+    f1 = head $ drop x lf 
+    x = child p pr lc
+
+--esbuit :: Kd2nTree -> Bool
+esbuit Empty = True
+esbuit t1 = False
+
+esfulla :: (Point p) => Kd2nTree p -> Bool
+esfulla Empty = False
+esfulla (Node _ _ lf) = not $ and (map (esbuit) lf )
+
+--nearest :: (Point p) => Kd2nTree -> p -> p
+
+kdmap :: (Point p, Point q) => (p -> q)  -> Kd2nTree p -> Kd2nTree q
+
 
 exampleSet :: Kd2nTree Point3d
 exampleSet = build [(Point3d [0,0,0], [3]), (Point3d [0.5, -0.5, 1.0], [1]), (Point3d [0.7, -1, 3], [1,2]), (Point3d [0,0,-3], [1,3])]
