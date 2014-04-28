@@ -51,8 +51,9 @@ instance Show p => Show (Kd2nTree p) where
           showChild (Empty:xs) n m = (showChild xs (n+1) m)
           showChild ((Node p lc ff):xs) n m = (take (m*4) (cycle " ")) ++ "<" ++ (show n) ++ ">" 
                                               ++ (show p) ++ " " ++ (show lc) ++ "\n" ++
-                                              (showChild xs (n+1) m) ++
-                                              (showChild ff 0 (m+1))
+                                              (showChild ff 0 (m+1)) ++
+                                              (showChild xs (n+1) m) 
+
   
 -- retorna el resultat d'inserir un punt al kd2ntree
 insert :: Point p => Kd2nTree p -> p -> [Int] -> Kd2nTree p
@@ -64,6 +65,7 @@ insert (Node p1 lcoords lfills) p2 lcoord2 = Node p1 lcoords (fillsAnt ++ [fill]
         fill = insert (head (drop n lfills)) p2 lcoord2
         n = child p1 p2 lcoords
 
+-- construeix un kd2ntree a partir duna llista de parells (punt, llista de coordenades)
 build :: Point p => [(p, [Int])] -> Kd2nTree p
 build [] = Empty
 build [(p1, l1)] = Node p1 l1 (replicate x Empty)
@@ -71,10 +73,28 @@ build [(p1, l1)] = Node p1 l1 (replicate x Empty)
 build (p1:xs) = insertlist t1 xs
                 where t1 = build [p1]
 
+buildIni = build [(Point3d [3.0, -1.0, 2.1], [1, 3]), (Point3d [3.5, 2.8, 3.1], [1, 2]), (Point3d [3.5, 0.0, 2.1], [3]), 
+                  (Point3d [3.0, -1.7, 3.1], [1, 2, 3]),
+                  (Point3d [3.0, 5.1, 0.0], [2]), (Point3d [1.5, 8.0, 1.5], [1]), (Point3d [3.3, 2.8, 2.5], [3]), 
+                  (Point3d [4.0, 5.1, 3.8], [2]),
+                  (Point3d [3.1, 3.8, 4.8], [1, 3]), (Point3d [1.8, 1.1, -2.0], [1, 2])]
+
 insertlist :: Point p => Kd2nTree p -> [(p, [Int])] -> Kd2nTree p
 insertlist t [] = t
 insertlist t ((p1, l1):xs) = insertlist (insert t p1 l1) xs
 
+
+get_all :: Point p => Kd2nTree p -> [(p, [Int])]
+get_all Empty = []
+get_all (Node p ll []) = [(p, ll)]
+get_all (Node p ll (x:xs)) = (get_all x) ++ (get_all (Node p ll xs))
+
+contains :: Point p => Kd2nTree p -> p -> Bool
+contains Empty p = False
+contains (Node p ll lfills) p1
+  | p == p1 = True
+  | otherwise = contains af p
+  where
 
 exampleSet :: Kd2nTree Point3d
 exampleSet = build [(Point3d [0,0,0], [3]), (Point3d [0.5, -0.5, 1.0], [1]), (Point3d [0.7, -1, 3], [1,2]), (Point3d [0,0,-3], [1,3])]
