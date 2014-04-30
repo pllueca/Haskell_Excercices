@@ -1,4 +1,5 @@
 --  Point  --
+-- Excercici 1
 class Point p where
   sel :: Int -> p -> Double
   dim :: p -> Int
@@ -9,6 +10,7 @@ class Point p where
 
 
 -- Point3d --
+-- Excercici 2
 data Point3d = Point3d [Double]
   
 instance Eq Point3d where
@@ -20,13 +22,12 @@ instance Point Point3d where
   dim p = 3
   cmp e1 e2 x = if (sel (x-1) e2) > (sel (x-1) e1) then 1
                 else 0
-                     
+  
   child e1 e2 l = valBin l2
     where l2 = map (cmp e1 e2) l
           
   dist (Point3d [x1,y1,z1]) (Point3d [x2,y2,z2]) = sqrt ((x2 - x1) ** 2) + ((y2 - y1) ** 2) + ((z2 - z1) ** 2) 
   listToPoint l = (Point3d l)
-  
 -- rep una llista de 1 i 0, retorna el valor en decimal del nombre binari q representa
 valBin :: [Int] -> Int
 valBin [x] = x
@@ -34,16 +35,20 @@ valBin l = 2 * (valBin $ init l) + last l
 
 
 -- Kd2nTree --
+-- Excercici 3
 data Kd2nTree p = Node p [Int] [Kd2nTree p] | Empty
 
 -- com els kd2ntrees son arbres de cerca, realment representen un conjunt de punts, aixi que no ens importa que tinguin la 
 -- mateixa forma, nomes els mateixos elements
---instance Eq p => Eq (Kd2nTree p) where
---  (Kd2nTree l1) == (Kd2nTree l2) = 
-
+instance (Point p, Eq p) => Eq (Kd2nTree p) where
+  Empty == Empty = True
+  t1 == t2 = and [(contains_all l1 t2), (size t1) == (size t2)]
+    where 
+      l1 = get_all t1
 
 instance Show p => Show (Kd2nTree p) where
 --  show :: Point p => Kd2nTree p -> string
+  show Empty = ""
   show (Node p1 l1 lfills) = (show p1) ++ " " ++ (show l1) ++ "\n" 
                              ++ showChild lfills 0 0
     where showChild :: Show p => [Kd2nTree p] -> Int -> Int -> String
@@ -55,6 +60,7 @@ instance Show p => Show (Kd2nTree p) where
                                               (showChild xs (n+1) m) 
 
   
+-- Excercici 4
 -- retorna el resultat d'inserir un punt al kd2ntree
 insert :: Point p => Kd2nTree p -> p -> [Int] -> Kd2nTree p
 insert Empty p l = Node p l (replicate x Empty)
@@ -73,36 +79,13 @@ build [(p1, l1)] = Node p1 l1 (replicate x Empty)
 build (p1:xs) = insertlist t1 xs
                 where t1 = build [p1]
 
-buildIni = build [(Point3d [3.0, -1.0, 2.1], [1, 3]), (Point3d [3.5, 2.8, 3.1], [1, 2]), (Point3d [3.5, 0.0, 2.1], [3]), 
-                  (Point3d [3.0, -1.7, 3.1], [1, 2, 3]),
-                  (Point3d [3.0, 5.1, 0.0], [2]), (Point3d [1.5, 8.0, 1.5], [1]), (Point3d [3.3, 2.8, 2.5], [3]), 
-                  (Point3d [4.0, 5.1, 3.8], [2]),
-                  (Point3d [3.1, 3.8, 4.8], [1, 3]), (Point3d [1.8, 1.1, -2.0], [1, 2])]
-
-insertlist :: Point p => Kd2nTree p -> [(p, [Int])] -> Kd2nTree p
-insertlist t [] = t
-insertlist t ((p1, l1):xs) = insertlist (insert t p1 l1) xs
-
-
+-- Excercici 5
 get_all :: Point p => Kd2nTree p -> [(p, [Int])]
 get_all Empty = []
 get_all (Node p ll []) = [(p, ll)]
 get_all (Node p ll (x:xs)) = (get_all x) ++ (get_all (Node p ll xs))
 
-get_childs :: Point p => Kd2nTree p -> [(p, [Int])]
-get_childs Empty = []
-get_childs (Node p ll []) = []
-get_childs (Node p ll (x:xs)) = (get_all x) ++ (get_all (Node p ll xs))
-
-contains :: (Point p, Eq p) => Kd2nTree p -> p -> Bool
-contains Empty p = False
-contains (Node p ll lfills) p1
-  | (p == p1) = True
-  | otherwise = contains af p1
-  where        
-    af = lfills !! x
-    x = child p p1 ll
-    
+-- Excercici 6
 remove :: (Point p, Eq p) => Kd2nTree p -> p -> Kd2nTree p
 remove (Node p lc lf) pr 
   | p == pr = if esfulla ((Node p lc lf)) then
@@ -115,18 +98,71 @@ remove (Node p lc lf) pr
     f1 = head $ drop x lf 
     x = child p pr lc
 
---esbuit :: Kd2nTree -> Bool
+
+-- Excerici 7
+contains :: (Point p, Eq p) => Kd2nTree p -> p -> Bool
+contains Empty p = False
+contains (Node p ll lfills) p1
+  | (p == p1) = True
+  | otherwise = contains af p1
+  where        
+    af = lfills !! x
+    x = child p p1 ll
+    
+-- Excercici 8
+--nearest :: (Point p) => Kd2nTree -> p -> p
+
+
+-- Excercici 9
+kdmap :: (Point p, Point q) => (p -> q)  -> Kd2nTree p -> Kd2nTree q
+kdmap f Empty = Empty
+kdmap f (Node p1 lc lf) = (Node p2 lc lf2)
+  where
+    p2 = f p1
+    lf2 = map (kdmap f) lf 
+
+
+-- Funcions Auxiliars
+    
+-- retorna el nombre de nodes de l'arbre
+size :: (Point p) => Kd2nTree p -> Int
+size t = length $ get_all t
+
+-- retorna si l'arbre conte tots els punts de la llista (ignora les coordenades de seleccio)
+contains_all :: (Point p, Eq p) => [(p,[Int])] -> Kd2nTree p -> Bool
+contains_all [] t = True
+contains_all ((p1,_):xs) t2
+    | (contains t2 p1) = contains_all xs t2
+    | otherwise = False
+
+-- retorna tots els punts que contenen els fills de l'arbre (no inclou l'arrel)
+get_childs :: Point p => Kd2nTree p -> [(p, [Int])]
+get_childs Empty = []
+get_childs (Node _ ll []) = []
+get_childs (Node p ll (x:xs)) = (get_all x) ++ (get_childs (Node p ll xs))
+
+-- insereix una llista de punts a un arbre
+insertlist :: Point p => Kd2nTree p -> [(p, [Int])] -> Kd2nTree p
+insertlist t [] = t
+insertlist t ((p1, l1):xs) = insertlist (insert t p1 l1) xs
+    
+-- retorna si l'arbre es buit o no
+esbuit :: (Point p) => Kd2nTree p -> Bool
 esbuit Empty = True
 esbuit t1 = False
 
+-- retorna si l'arbre es una fulla (ssi tots els seus fills son Empty)
 esfulla :: (Point p) => Kd2nTree p -> Bool
 esfulla Empty = False
-esfulla (Node _ _ lf) = not $ and (map (esbuit) lf )
-
---nearest :: (Point p) => Kd2nTree -> p -> p
-
-kdmap :: (Point p, Point q) => (p -> q)  -> Kd2nTree p -> Kd2nTree q
+esfulla (Node _ _ lf) = and (map (esbuit) lf)
 
 
+-- constructors per fer proves
+buildIni = build [(Point3d [3.0, -1.0, 2.1], [1, 3]), (Point3d [3.5, 2.8, 3.1], [1, 2]), (Point3d [3.5, 0.0, 2.1], [3]), 
+                  (Point3d [3.0, -1.7, 3.1], [1, 2, 3]),
+                  (Point3d [3.0, 5.1, 0.0], [2]), (Point3d [1.5, 8.0, 1.5], [1]), (Point3d [3.3, 2.8, 2.5], [3]), 
+                  (Point3d [4.0, 5.1, 3.8], [2]),
+                  (Point3d [3.1, 3.8, 4.8], [1, 3]), (Point3d [1.8, 1.1, -2.0], [1, 2])]
+           
 exampleSet :: Kd2nTree Point3d
 exampleSet = build [(Point3d [0,0,0], [3]), (Point3d [0.5, -0.5, 1.0], [1]), (Point3d [0.7, -1, 3], [1,2]), (Point3d [0,0,-3], [1,3])]
