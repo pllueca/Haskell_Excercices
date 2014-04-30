@@ -117,9 +117,18 @@ nearest (Node p1 lc lf) p2
     where
       d1 = dist p1 p2
       d2 = dist p3 p2      -- distancia menors de p2 entre tots els fills!
-      p3 = nearest a2 p2   -- punt mes proper entre els fills
-      a2 = lf !! (child p1 p2 lc)
+      p3 = nearest_child lf p2   -- punt mes proper entre els fills
+--      a2 = lf !! (child p1 p2 lc)
 
+nearest_child :: (Point p, Eq p) => [Kd2nTree p] -> p -> p
+nearest_child [] p = 
+nearest_child (x:xs) p 
+  | esbuit x = nearest_child xs p
+  | otherwise = if (dist c p) < dist (nearest_child xs p) p 
+                         then c
+                         else nearest_child xs p -- si no es buit!!
+  where
+      c = nearest x p
 
 
 -- Excercici 9
