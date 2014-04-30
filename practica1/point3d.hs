@@ -11,12 +11,11 @@ class Point p where
 
 -- Point3d --
 -- Excercici 2
-data Point3d = Point3d [Double]
+data Point3d = Point3d [Double] deriving (Eq)
   
-instance Eq Point3d where
-  e1 == e2 = 0.0 == dist e1 e2  
 instance Show Point3d where
   show (Point3d [d1,d2,d3]) = "(" ++ (show d1) ++ "," ++ (show d2) ++ "," ++ (show d3) ++")"
+  
 instance Point Point3d where
   sel x (Point3d l) = l !! x                      
   dim p = 3
@@ -47,14 +46,14 @@ instance (Point p, Eq p) => Eq (Kd2nTree p) where
       l1 = get_all t1
 
 instance Show p => Show (Kd2nTree p) where
---  show :: Point p => Kd2nTree p -> string
   show Empty = ""
   show (Node p1 l1 lfills) = (show p1) ++ " " ++ (show l1) ++ "\n" 
                              ++ showChild lfills 0 0
     where showChild :: Show p => [Kd2nTree p] -> Int -> Int -> String
           showChild [] _ _ = ""
           showChild (Empty:xs) n m = (showChild xs (n+1) m)
-          showChild ((Node p lc ff):xs) n m = (take (m*4) (cycle " ")) ++ "<" ++ (show n) ++ ">" 
+          showChild ((Node p lc ff):xs) n m = (take (m*4) (cycle " ")) ++ 
+                                              " <" ++ (show n) ++ "> "  
                                               ++ (show p) ++ " " ++ (show lc) ++ "\n" ++
                                               (showChild ff 0 (m+1)) ++
                                               (showChild xs (n+1) m) 
@@ -110,7 +109,17 @@ contains (Node p ll lfills) p1
     x = child p p1 ll
     
 -- Excercici 8
---nearest :: (Point p) => Kd2nTree -> p -> p
+nearest :: (Point p, Eq p) => Kd2nTree p -> p -> p
+nearest (Node p1 lc lf) p2
+  | p1 == p2 = p1 -- si son el mateix punt larrel es el mes proper
+  | otherwise = if d1 < d2 then p1
+                else p3
+    where
+      d1 = dist p1 p2
+      d2 = dist p3 p2      -- distancia menors de p2 entre tots els fills!
+      p3 = nearest a2 p2   -- punt mes proper entre els fills
+      a2 = lf !! (child p1 p2 lc)
+
 
 
 -- Excercici 9
