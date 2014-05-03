@@ -7,6 +7,8 @@ class Point p where
   cmp :: p -> p -> Int -> Int
   dist :: p -> p -> Double
   listToPoint :: [Double] -> p
+  ptrans :: [Double] -> p -> p
+  pscale :: Double -> p -> p
 
 
 -- Point3d --
@@ -25,8 +27,13 @@ instance Point Point3d where
   child e1 e2 l = valBin l2
     where l2 = map (cmp e1 e2) l
           
-  dist (Point3d [x1,y1,z1]) (Point3d [x2,y2,z2]) = sqrt ((x2 - x1) ** 2) + ((y2 - y1) ** 2) + ((z2 - z1) ** 2) 
+  dist (Point3d [x1,y1,z1]) (Point3d [x2,y2,z2]) = sqrt (((x2 - x1) ** 2) + 
+                                                   ((y2 - y1) ** 2) + ((z2 - z1) ** 2) )
   listToPoint l = (Point3d l)
+  ptrans lt (Point3d l) = listToPoint $ zipWith (+) l lt
+  pscale x (Point3d l) = listToPoint $ map (* x) l
+  
+  
 -- rep una llista de 1 i 0, retorna el valor en decimal del nombre binari q representa
 valBin :: [Int] -> Int
 valBin [x] = x
@@ -121,7 +128,7 @@ nearest (Node p1 lc lf) p2
 --      a2 = lf !! (child p1 p2 lc)
 
 nearest_child :: (Point p, Eq p) => [Kd2nTree p] -> p -> p
-nearest_child [] p = 
+--nearest_child [] p = 
 nearest_child (x:xs) p 
   | esbuit x = nearest_child xs p
   | otherwise = if (dist c p) < dist (nearest_child xs p) p 
@@ -138,7 +145,12 @@ kdmap f (Node p1 lc lf) = (Node p2 lc lf2)
   where
     p2 = f p1
     lf2 = map (kdmap f) lf 
+    
+translation :: (Point p) => [Double] -> Kd2nTree p -> Kd2nTree p
+translation lt t = kdmap (ptrans lt) t
 
+scale :: (Point p) => Double -> Kd2nTree p -> Kd2nTree p
+scale x t = kdmap (pscale x) t
 
 -- Funcions Auxiliars
     
