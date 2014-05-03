@@ -9,15 +9,18 @@ data Casella = Casella Color Tipus | B
 data Tauler = Tauler [[Casella]] 
               deriving (Show)
                        
-tini :: Int -> Int -> Tauler
-tini x y = Tauler (take x (cycle [take y (cycle [B])]))
-
-
 
 get_casella :: Int -> Int -> Tauler -> Casella
 get_casella x y (Tauler t) = c
   where
     c = ((t !! x) !! y)
+    
+set_casella :: Int -> Int -> Tauler -> Casella -> Tauler
+set_casella x y (Tauler t) c = (Tauler (finis ++ [fn] ++ flasts))
+  where finis = take x t
+        fa = head $ drop x t
+        fn = (take y fa) ++ [c] ++ (drop (y+1) fa)
+        flasts = drop (x + 1) t
 
 
 num_sos_total :: Tauler -> Int
@@ -26,9 +29,13 @@ num_sos_total t = (sos_files t) -- + (sos_cols t) + (sos_diags t)
 sos_files (Tauler []) = 0
 sos_files (Tauler (f:fs)) = (sos_llista f) + (sos_files (Tauler fs) )
 
+--sos_cols (Tauler []) = 0
+--sos_cols (Tauler (f:fs)) = 
+
 sos_llista :: [Casella] -> Int
 sos_llista [] = 0
 sos_llista ((Casella _ S):(Casella _ O):(Casella c S):l) = 1 + (sos_llista ((Casella c S):l))
+sos_llista (_:xs) = sos_llista xs
                                
 
 guanya_blau :: Tauler -> Bool
@@ -83,3 +90,15 @@ print_fila [] = putStr ""
 print_fila (c:cs) = do
   print_casella c
   print_fila cs
+  
+  
+-- proves -- 
+tini :: Int -> Int -> Tauler
+tini x y = Tauler (take x (cycle [take y (cycle [B])]))
+
+tiniSos x y = Tauler (take x (cycle [take y (cycle 
+                                             ([(Casella Blue S)]++[(Casella Red O)])
+                                            )
+                                    ]
+                             )
+                     )
