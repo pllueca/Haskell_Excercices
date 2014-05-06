@@ -27,6 +27,7 @@ instance Point Point3d where
   child e1 e2 l = valBin l2
     where l2 = map (cmp e1 e2) l
           
+          
   dist (Point3d [x1,y1,z1]) (Point3d [x2,y2,z2]) = sqrt (((x2 - x1) ** 2) + 
                                                    ((y2 - y1) ** 2) + ((z2 - z1) ** 2) )
   listToPoint l = (Point3d l)
@@ -34,10 +35,7 @@ instance Point Point3d where
   pscale x (Point3d l) = listToPoint $ map (* x) l
   
   
--- rep una llista de 1 i 0, retorna el valor en decimal del nombre binari q representa
-valBin :: [Int] -> Int
-valBin [x] = x
-valBin l = 2 * (valBin $ init l) + last l
+
 
 
 -- Kd2nTree --
@@ -117,26 +115,17 @@ contains (Node p ll lfills) p1
     
 -- Excercici 8
 nearest :: (Point p, Eq p) => Kd2nTree p -> p -> p
-nearest (Node p1 lc lf) p2
-  | p1 == p2 = p1 -- si son el mateix punt larrel es el mes proper
-  | otherwise = if d1 < d2 then p1
-                else p3
-    where
-      d1 = dist p1 p2
-      d2 = dist p3 p2      -- distancia menors de p2 entre tots els fills!
-      p3 = nearest_child lf p2   -- punt mes proper entre els fills
---      a2 = lf !! (child p1 p2 lc)
-
-nearest_child :: (Point p, Eq p) => [Kd2nTree p] -> p -> p
---nearest_child [] p = 
-nearest_child (x:xs) p 
-  | esbuit x = nearest_child xs p
-  | otherwise = if (dist c p) < dist (nearest_child xs p) p 
-                         then c
-                         else nearest_child xs p -- si no es buit!!
+nearest t1@(Node q lc lf) p 
+  | p == q = p
+  | otherwise = nearest_child lf p q
   where
-      c = nearest x p
-
+    nearest_child [] p q = q  -- q es el mes proper fins ara
+    nearest_child (f:fs) p q 
+      | (esbuit f) = nearest_child fs p q
+      | otherwise = if (dist p q) > (dist p q1) then nearest_child fs p q1
+                    else nearest_child fs p q
+      where
+        q1 = nearest f p
 
 -- Excercici 9
 kdmap :: (Point p, Point q) => (p -> q)  -> Kd2nTree p -> Kd2nTree q
@@ -154,6 +143,11 @@ scale x t = kdmap (pscale x) t
 
 -- Funcions Auxiliars
     
+-- rep una llista de 1 i 0, retorna el valor en decimal del nombre binari q representa
+valBin :: [Int] -> Int
+valBin [x] = x
+valBin l = 2 * (valBin $ init l) + last l
+
 -- retorna el nombre de nodes de l'arbre
 size :: (Point p) => Kd2nTree p -> Int
 size t = length $ get_all t
@@ -188,11 +182,22 @@ esfulla (Node _ _ lf) = and (map (esbuit) lf)
 
 
 -- constructors per fer proves
-buildIni = build [(Point3d [3.0, -1.0, 2.1], [1, 3]), (Point3d [3.5, 2.8, 3.1], [1, 2]), (Point3d [3.5, 0.0, 2.1], [3]), 
+buildIni :: Kd2nTree Point3d
+buildIni = build [(Point3d [3.0, -1.0, 2.1], [1, 3]), 
+                  (Point3d [3.5, 2.8, 3.1], [1, 2]), 
+                  (Point3d [3.5, 0.0, 2.1], [3]), 
                   (Point3d [3.0, -1.7, 3.1], [1, 2, 3]),
-                  (Point3d [3.0, 5.1, 0.0], [2]), (Point3d [1.5, 8.0, 1.5], [1]), (Point3d [3.3, 2.8, 2.5], [3]), 
+                  (Point3d [3.0, 5.1, 0.0], [2]), 
+                  (Point3d [1.5, 8.0, 1.5], [1]), 
+                  (Point3d [3.3, 2.8, 2.5], [3]), 
                   (Point3d [4.0, 5.1, 3.8], [2]),
-                  (Point3d [3.1, 3.8, 4.8], [1, 3]), (Point3d [1.8, 1.1, -2.0], [1, 2])]
+                  (Point3d [3.1, 3.8, 4.8], [1, 3]), 
+                  (Point3d [1.8, 1.1, -2.0], [1, 2])
+                 ]
            
 exampleSet :: Kd2nTree Point3d
-exampleSet = build [(Point3d [0,0,0], [3]), (Point3d [0.5, -0.5, 1.0], [1]), (Point3d [0.7, -1, 3], [1,2]), (Point3d [0,0,-3], [1,3])]
+exampleSet = build [(Point3d [0,0,0], [3]), 
+                    (Point3d [0.5, -0.5, 1.0], [1]), 
+                    (Point3d [0.7, -1, 3], [1,2]), 
+                    (Point3d [0,0,-3], [1,3])
+                   ]
