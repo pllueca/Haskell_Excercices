@@ -1,9 +1,9 @@
 module Tauler where
 import System.Console.ANSI
---data Color = Blue | Red
 
 data Tipus = S|O 
            deriving (Eq, Show)
+                    
 data Casella = Casella Color Tipus | B
              deriving (Eq,Show)
 
@@ -23,6 +23,11 @@ set_casella x y (Tauler t) c = (Tauler (finis ++ [fn] ++ flasts))
         fn = (take y fa) ++ [c] ++ (drop (y+1) fa)
         flasts = drop (x + 1) t
 
+tauler_ple :: Tauler -> Bool
+tauler_ple (Tauler []) = True
+tauler_ple (Tauler (f:fs)) = if any (== B) f then False
+                           else tauler_ple (Tauler fs)
+  
 
 num_sos_total :: Tauler -> Int
 num_sos_total t = (sos_files t) + (sos_cols t (num_cols t)) --  + (sos_diags t)
