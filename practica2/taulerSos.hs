@@ -1,6 +1,7 @@
 module Tauler where
 import System.Console.ANSI
 --data Color = Blue | Red
+
 data Tipus = S|O 
            deriving (Eq, Show)
 data Casella = Casella Color Tipus | B
@@ -24,47 +25,38 @@ set_casella x y (Tauler t) c = (Tauler (finis ++ [fn] ++ flasts))
 
 
 num_sos_total :: Tauler -> Int
-num_sos_total t = (sos_files t) -- + (sos_cols t) + (sos_diags t)
+num_sos_total t = (sos_files t) + (sos_cols t (num_cols t)) --  + (sos_diags t)
 
 sos_files (Tauler []) = 0
 sos_files (Tauler (f:fs)) = (sos_llista f) + (sos_files (Tauler fs) )
 
---sos_cols (Tauler []) = 0
---sos_cols (Tauler (f:fs)) = 
+
+sos_cols t x 
+  | x == 0 = sos_llista (get_columna t x)
+  | otherwise = (sos_llista (get_columna t x)) + (sos_cols t (x - 1))
+  
+-- retorna la iessima columna de un tauler  
+get_columna :: Tauler -> Int -> [Casella]
+get_columna (Tauler []) _ = []
+get_columna (Tauler (f:fs)) i = (take 1 $ drop i f) ++ (get_columna (Tauler fs) i)
 
 sos_llista :: [Casella] -> Int
 sos_llista [] = 0
 sos_llista ((Casella _ S):(Casella _ O):(Casella c S):l) = 1 + (sos_llista ((Casella c S):l))
 sos_llista (_:xs) = sos_llista xs
-                               
+                        
+                        
+num_cols :: Tauler -> Int
+num_cols (Tauler l) = length l
 
-guanya_blau :: Tauler -> Bool
-guanya_blau (Tauler t) = files || cols || diag
-  where files = sos_blau_files t
-        cols = False -- sos_blau_cols t
-        diag = False --sos_blau_diag t
+num_files :: Tauler -> Int
+num_files (Tauler []) = 0
+num_files (Tauler (x:xs)) = length x
 
---guanya_vermell :: Tauler -> Bool
---guanya_vermell (Tauler t) = (files || cols || diag)
---  where files = sos_vermell_files t
---        cols = sos_vermell_cols t
---        diag = sos_vermell_diag t
-        
-sos_blau_files [] = False
-sos_blau_files (l:ls)
-  | sos_blau_llista l = True
-  | otherwise = sos_blau_files ls
-                
-sos_blau_llista [] = False
-sos_blau_llista ((Casella Blue S):(Casella Blue O):(Casella Blue S):l) = True
-sos_blau_llista (_:l) = sos_blau_llista l
-        
-                        
-                        
-                        
-                        
+
 -- IO --
 
+print_casella :: Casella -> IO()
 print_casella (Casella c t) = do
   setSGR [SetColor Foreground Vivid c]
   putStr (show t)
@@ -77,7 +69,7 @@ print_casella B = do
   setSGR []
   putStr " "
   
-
+print_tauler :: Tauler -> IO()
 print_tauler (Tauler []) = do
   putStrLn ""
   
@@ -102,3 +94,6 @@ tiniSos x y = Tauler (take x (cycle [take y (cycle
                                     ]
                              )
                      )
+provasos = Tauler [[Casella Blue S, B],[Casella Red O, Casella Blue O], [Casella Blue S, B]]
+
+              

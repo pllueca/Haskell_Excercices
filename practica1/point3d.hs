@@ -91,10 +91,10 @@ get_all (Node p ll (x:xs)) = (get_all x) ++ (get_all (Node p ll xs))
 
 -- Excercici 6
 remove :: (Point p, Eq p) => Kd2nTree p -> p -> Kd2nTree p
-remove (Node p lc lf) pr 
-  | p == pr = if esfulla ((Node p lc lf)) then
+remove t@(Node p lc lf) pr 
+  | p == pr = if esfulla t then
                 Empty
-                else build (get_childs (Node p lc lf))
+                else build (get_childs t)
   | otherwise = (Node p lc (linis ++ [remove f1 pr] ++ llasts))
   where 
     linis = take x lf
