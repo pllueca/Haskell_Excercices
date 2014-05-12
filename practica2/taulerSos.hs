@@ -10,6 +10,7 @@ data Casella = Casella Color Tipus | B
 data Tauler = Tauler [[Casella]] 
               deriving (Show)
                        
+data Partida = Game Tauler Int Int
 
 get_casella :: Int -> Int -> Tauler -> Casella
 get_casella x y (Tauler t) = c
@@ -63,16 +64,17 @@ num_files (Tauler (x:xs)) = length x
 
 print_casella :: Casella -> IO()
 print_casella (Casella c t) = do
-  setSGR [SetColor Foreground Vivid c]
-  putStr (show t)
+  setSGR [SetColor Background Vivid c,
+          SetColor Foreground Vivid White
+         ]
+  putStr (" " ++ (show t) ++ " ")
   setSGR []
-  putStr " "
   
 print_casella B = do
-  setSGR [SetColor Foreground Vivid Green]
-  putStr "_"
+  setSGR [SetColor Background Vivid Green]
+  putStr "   "
   setSGR []
-  putStr " "
+  putStr ""
   
 print_tauler :: Tauler -> IO()
 print_tauler (Tauler []) = do
@@ -92,6 +94,8 @@ print_fila (c:cs) = do
 -- proves -- 
 tini :: Int -> Int -> Tauler
 tini x y = Tauler (take x (cycle [take y (cycle [B])]))
+
+gameIni x y = Game (tini x y) 0 0
 
 tiniSos x y = Tauler (take x (cycle [take y (cycle 
                                              ([(Casella Blue S)]++[(Casella Red O)])

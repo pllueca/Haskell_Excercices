@@ -92,7 +92,6 @@ get_all (Node p ll []) = [(p, ll)]
 get_all (Node p ll (x:xs)) = (get_all x) ++ (get_all (Node p ll xs))
 
 -- Excercici 6
--- elimina el punt
 remove :: (Point p, Eq p) => Kd2nTree p -> p -> Kd2nTree p
 remove t@(Node p lc lf) pr 
   | p == pr = if esfulla t then
@@ -122,7 +121,8 @@ nearest t1@(Node q lc lf) p
   | p == q = p
   | otherwise = nearest_child lf p q
   where
-    nearest_child [] p q = q  -- q es el mes proper fins ara
+    -- retorna el punt mes proper entre els fills d'un arbre, va acumulant el mes proper trobat fins ara
+    nearest_child [] p q = q  
     nearest_child (f:fs) p q 
       | (esbuit f) = nearest_child fs p q
       | otherwise = if (dist p q) > (dist p q1) then nearest_child fs p q1
