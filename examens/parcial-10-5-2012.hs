@@ -23,6 +23,18 @@ getN f n = (infGen f) !! n
 -- 4.1
 data Graph = G [Int] (Int -> [Int])
 
-instance Eq Graph where
-  (G l1 f1) == (G l2 f2) =  
+--instance Eq Graph where
+--  (G l1 f1) == (G l2 f2) =  
+
+iniG = G [1..7] fgr
+       where
+         fgr 1 = [2,5]
+         fgr 2 = [3]
+         fgr 3 = [4,6]
+         fgr 4 = []
+         fgr 5 = [6,7]
+         fgr 6 = [7]
+         fgr 7 = []
+         fgr _ = []
+                 
     
