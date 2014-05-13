@@ -12,6 +12,13 @@ data Tauler = Tauler [[Casella]]
                        
 data Partida = Game Tauler Int Int
 
+
+-- Partida
+creaPartida :: Int -> Int -> Partida
+creaPartida x y = Game (tini x y) 0 0
+
+-- Funcions Tauler
+
 get_casella :: Int -> Int -> Tauler -> Casella
 get_casella x y (Tauler t) = c
   where
@@ -24,10 +31,24 @@ set_casella x y (Tauler t) c = (Tauler (finis ++ [fn] ++ flasts))
         fn = (take y fa) ++ [c] ++ (drop (y+1) fa)
         flasts = drop (x + 1) t
 
+-- Retorna si el tauler te alguna casella lliure
 tauler_ple :: Tauler -> Bool
 tauler_ple (Tauler []) = True
 tauler_ple (Tauler (f:fs)) = if any (== B) f then False
                            else tauler_ple (Tauler fs)
+                                
+-- Retorna la llista de parells (x,y) que representen la posicio de les caselles buides
+get_caselles_buides :: Tauler -> [(Int,Int)]
+get_caselles_buides (Tauler t) = get_cas_empty t 0
+
+
+get_cas_empty t x = if x >= length t then []
+                    else (get_cas_empty_fila (t !! x) x 0) ++ (get_cas_empty t (x+1))
+
+get_cas_empty_fila [] _ _ = []
+get_cas_empty_fila (x:xs) i j 
+  | x == B = [(i,j)] ++ get_cas_empty_fila xs i (j+1)
+  | otherwise = get_cas_empty_fila xs i (j+1)
   
 
 num_sos_total :: Tauler -> Int
@@ -99,10 +120,7 @@ gameIni x y = Game (tini x y) 0 0
 
 tiniSos x y = Tauler (take x (cycle [take y (cycle 
                                              ([(Casella Blue S)]++[(Casella Red O)])
-                                            )
-                                    ]
-                             )
-                     )
+                                            )]))
 provasos = Tauler [[Casella Blue S, B],[Casella Red O, Casella Blue O], [Casella Blue S, B]]
 
               

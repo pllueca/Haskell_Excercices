@@ -14,17 +14,58 @@ color :: Int -> Color
 color 1 = Blue
 color 2 = Red
 
+
+nextPlayer :: Int -> Int
+nextPlayer 1 = 2
+nextPlayer 2 = 1
 -- rep un tauler i un jugador i retorna el moviment que efectuara
 --estrategia :: Tauler -> Int -> Moviment
 
 -- juga la CPU, el jugador
 --tiraCPU :: Tauler -> Color -> Tauler
 --tiraCPU t c = actualitza t m
-          
+
+getMovRand :: Tauler -> Int -> 
+
+
 -- fa un moviment i es torna a crida, si no ha acabat la partida 
---partida :: Tauler -> Int -> Int -> Int -> Tauler
---partida t p1 p2 pAct  
---  | 
+tirada :: Partida -> Int -> Partida
+tirada (Game t p1 p2) j 
+  | tauler_ple t = (Game t p1 p2)
+  | otherwise =   if pNew > pOld then 
+                    if j == 1 then
+                      tirada (Game t2 (p1 + (pNew - pOld)) p2 1)
+                    else
+                      tirada (Game t2 p1 (p2 + (pNew - pOld)) 2)
+                  else
+                    tirada (Game t2 p1 p2 (nextPlayer j))
+  where
+    m = getMovRand t j
+    pOld = p1 + p2
+    pNew = num_sos_total t2
+    t2 = fes_moviment t m
+    
+--end_partida :: Partida 
+end_partida (Game t p1 p2) 
+  | p1 < p2 = 
+    do
+      putStrLn ("Guanya el jugador 2!")
+      print_tauler t
+  | p1 > p2 = 
+    do
+      putStrLn ("Guanya el jugador 1!")
+      print_tauler t
+  | otherwise = 
+    do
+      putStrLn ("Empat!")
+      print_tauler t
+    
+
+--partida_CPU_CPU :: Int -> Int -> Partida
+partida_CPU_CPU dif1 dif2 nc nr = do
+  let p = creaPartida nc nr;
+  
+      
 
 main = do
   putStrLn ("SOS!")
