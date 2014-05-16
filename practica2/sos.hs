@@ -25,8 +25,13 @@ nextPlayer 2 = 1
 --tiraCPU :: Tauler -> Color -> Tauler
 --tiraCPU t c = actualitza t m
 
-getMovRand :: Tauler -> Int -> 
-
+getMovRand :: Tauler -> (Int,Int)
+getMovRand t = l_movs !! rand
+  where l_movs = get_caselles_buides t
+        rand = getStdRandom (randomR (0, (length l_movs)))
+        
+fes_moviment :: Tauler -> Color -> Tipus -> (Int,Int) -> Tauler
+fes_moviment t c tp (x,y) = set_casella x y t (Casellac tp)
 
 -- fa un moviment i es torna a crida, si no ha acabat la partida 
 tirada :: Partida -> Int -> Partida
@@ -40,7 +45,8 @@ tirada (Game t p1 p2) j
                   else
                     tirada (Game t2 p1 p2 (nextPlayer j))
   where
-    m = getMovRand t j
+    m = getMovRand t
+    
     pOld = p1 + p2
     pNew = num_sos_total t2
     t2 = fes_moviment t m
@@ -62,8 +68,7 @@ end_partida (Game t p1 p2)
     
 
 --partida_CPU_CPU :: Int -> Int -> Partida
-partida_CPU_CPU dif1 dif2 nc nr = do
-  let p = creaPartida nc nr;
+partida_CPU_CPU dif1 dif2 nc nr = creaPartida nc nr;
   
       
 
@@ -83,12 +88,11 @@ main = do
       cpu1 <- readInt;
       putStrLn ("Estrategia usada per CPU2?\n1: Random\n2: Llest");
       cpu2 <- readInt;
-      return $ partida
+
     else 
     do
     putStrLn ("Estrategia usada per CPU?\n1: Random\n2: Llest");
     cpu <- readInt;
-    return $ partida
     
         
   let t = tiniSos nrows ncols
