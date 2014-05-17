@@ -16,7 +16,7 @@ data Partida = Game Tauler Int Int
 
 -- Partida
 creaPartida :: Int -> Int -> Partida
-creaPartida x y = Game (tini x y) 0 0
+creaPartida x y = (Game (tini x y) 0 0)
 
 -- Funcions Tauler
 
@@ -83,6 +83,10 @@ num_files (Tauler (x:xs)) = length x
 
 
 -- IO --
+
+print_partida (Game t j1 j2) = do
+  print_tauler t
+  
 
 print_casella :: Casella -> IO()
 print_casella (Casella c t) = do

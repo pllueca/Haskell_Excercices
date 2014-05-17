@@ -25,33 +25,35 @@ nextPlayer 2 = 1
 --tiraCPU :: Tauler -> Color -> Tauler
 --tiraCPU t c = actualitza t m
 
-getMovRand :: Tauler -> (Int,Int)
-getMovRand t = l_movs !! rand
+--getMovRand :: Tauler -> (Int,Int)
+getMovRand t = l_movs !! 0
   where l_movs = get_caselles_buides t
-        rand = getStdRandom (randomR (0, (length l_movs)))
+--        rand = getStdRandom (randomR (0, (length l_movs)))
         
 fes_moviment :: Tauler -> Color -> Tipus -> (Int,Int) -> Tauler
-fes_moviment t c tp (x,y) = set_casella x y t (Casellac tp)
+fes_moviment t c tp (x,y) = set_casella x y t (Casella c tp)
 
 -- fa un moviment i es torna a crida, si no ha acabat la partida 
-tirada :: Partida -> Int -> Partida
-tirada (Game t p1 p2) j 
-  | tauler_ple t = (Game t p1 p2)
-  | otherwise =   if pNew > pOld then 
+tirada :: Partida -> Int -> IO()
+tirada (Game t p1 p2) j = do
+  print_tauler t
+  if tauler_ple t then do 
+    end_partida (Game t p1 p2)
+  else do
+  if pNew > pOld then 
                     if j == 1 then
-                      tirada (Game t2 (p1 + (pNew - pOld)) p2 1)
+                      tirada (Game t2 (p1 + (pNew - pOld)) p2) 1
                     else
-                      tirada (Game t2 p1 (p2 + (pNew - pOld)) 2)
+                      tirada (Game t2 p1 (p2 + (pNew - pOld))) 2
                   else
-                    tirada (Game t2 p1 p2 (nextPlayer j))
+                    tirada (Game t2 p1 p2) (nextPlayer j)
   where
-    m = getMovRand t
-    
+    m = getMovRand t    
     pOld = p1 + p2
     pNew = num_sos_total t2
-    t2 = fes_moviment t m
+    t2 = fes_moviment t (color j) S m
     
---end_partida :: Partida 
+end_partida :: Partida -> IO()
 end_partida (Game t p1 p2) 
   | p1 < p2 = 
     do
@@ -67,35 +69,26 @@ end_partida (Game t p1 p2)
       print_tauler t
     
 
---partida_CPU_CPU :: Int -> Int -> Partida
-partida_CPU_CPU dif1 dif2 nc nr = creaPartida nc nr;
+partida_CPU_CPU :: Int -> Int -> Int -> Int -> IO ()
+partida_CPU_CPU dif1 dif2 nc nr = do 
+  tirada (creaPartida nc nr) 1
+  
   
       
 
 main = do
   putStrLn ("SOS!")
   putStrLn ("Nombre de files?")
-  nrows <- readInt
+  nrows <- readInt;
   putStrLn ("Nombre de columnes?")
-  ncols <- readInt
+  ncols <- readInt;
+  putStrLn ("Estrategia usada per CPU1?\n1: Random\n2: Llest");
+  cpu1 <- readInt;
+  putStrLn ("Estrategia usada per CPU2?\n1: Random\n2: Llest");
+  cpu2 <- readInt;
+  partida_CPU_CPU cpu1 cpu2 nrows ncols
+  return ()
   
-  putStrLn("Tipus de joc?\n1: Jugador vs CPU\n2: CPU vs CPU")
-  m <- readInt
   
-  if m == 2 then     
-    do
-      putStrLn ("Estrategia usada per CPU1?\n1: Random\n2: Llest");
-      cpu1 <- readInt;
-      putStrLn ("Estrategia usada per CPU2?\n1: Random\n2: Llest");
-      cpu2 <- readInt;
 
-    else 
-    do
-    putStrLn ("Estrategia usada per CPU?\n1: Random\n2: Llest");
-    cpu <- readInt;
-    
-        
-  let t = tiniSos nrows ncols
-  print_tauler t
   
-  return m
