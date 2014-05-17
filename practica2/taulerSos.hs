@@ -13,6 +13,7 @@ data Tauler = Tauler [[Casella]]
 data Partida = Game Tauler Int Int
 
 
+
 -- Partida
 creaPartida :: Int -> Int -> Partida
 creaPartida x y = Game (tini x y) 0 0
@@ -20,7 +21,7 @@ creaPartida x y = Game (tini x y) 0 0
 -- Funcions Tauler
 
 get_casella :: Int -> Int -> Tauler -> Casella
-get_casella x y (Tauler t) = c
+get_casella x y (Tauler t) = c  
   where
     c = ((t !! x) !! y)
     
